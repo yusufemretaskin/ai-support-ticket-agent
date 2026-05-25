@@ -1,3 +1,4 @@
+from typing import Any
 from pydantic import BaseModel
 
 class TicketRequest(BaseModel):
@@ -18,3 +19,5 @@ class TicketResponse(BaseModel):
     title:str
     description:str
     analysis:str
+    analysis: TicketAnalysis
+    action_result: dict[str, Any]
