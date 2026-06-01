@@ -27,3 +27,46 @@ def create_ticket_record(
     tickets_db.append(ticket)
 
     return ticket
+
+def get_ticket_by_id(ticket_id:str)->dict | None:
+    for ticket in tickets_db:
+        if(ticket["ticket_id"]==ticket_id):
+            return ticket
+        
+    return None
+
+
+
+def add_customer_message(ticket_id: str, message: str) -> dict | None:
+    ticket = get_ticket_by_id(ticket_id)
+
+    if ticket is None:
+        return None
+
+    if "messages" not in ticket:
+        ticket["messages"] = []
+
+    ticket["messages"].append({
+        "role": "customer",
+        "content": message
+    })
+
+    return ticket
+
+def build_ticket_context(ticket : dict) -> str:
+    context_parts = [
+        f"Title: {ticket['title']}",
+        f"Original description: {ticket['description']}"
+    ]
+    
+    messages = ticket.get("messages", [])
+
+    if messages:
+        context_parts.append("Follow-up messages:")
+
+        for message in messages:
+            context_parts.append(
+                f"{message['role']}: {message['content']}"
+            )
+    
+    return "\n".join(context_parts)

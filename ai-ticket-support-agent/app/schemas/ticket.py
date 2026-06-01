@@ -16,8 +16,13 @@ class TicketAnalysis(BaseModel):
     response_draft: str
 
 class TicketResponse(BaseModel):
+    ticket_id: str
     title:str
     description:str
     analysis:str
     analysis: TicketAnalysis
     action_result: dict[str, Any]
+
+class TicketMessageRequest(BaseModel):
+    message:str
+    
