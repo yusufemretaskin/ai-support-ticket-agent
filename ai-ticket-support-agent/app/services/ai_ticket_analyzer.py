@@ -16,7 +16,7 @@ def analyze_ticket_with_ai(title: str, description: str) -> dict:
     prompt = f"""
 You are an AI support ticket assistant.
 
-Analyze the ticket and return JSON only.
+Analyze the support ticket and choose the best backend tool.
 
 Allowed priorities:
 Low, Medium, High, Critical
@@ -36,17 +36,6 @@ Ticket title:
 Ticket description:
 {description}
 
-Return this JSON structure only:
-{{
-  "category": "...",
-  "priority": "...",
-  "sentiment": "Neutral | Frustrated | Angry",
-  "assigned_department": "...",
-  "requires_escalation": true,
-  "selected_action": "...",
-  "summary": "...",
-  "response_draft": "..."
-}}
 """
 
     response = client.chat.completions.create(
