@@ -1,7 +1,7 @@
 import os
 import json
 from openai import OpenAI
-
+from app.services.tool_definitions import TICKET_TOOLS
 token = os.getenv("GITHUB_TOKEN")
 
 client = OpenAI(
@@ -54,18 +54,36 @@ Return this JSON structure only:
         messages=[
             {
                 "role": "system",
-                "content": "You analyze support tickets and return valid JSON only."
+                "content": "You analyze support tickets and choose the correct backend tool."
             },
             {
                 "role": "user",
                 "content": prompt
             }
-        ]
+        ],
+        tools=TICKET_TOOLS,
+        tool_choice="required"
     )
 
-    content = response.choices[0].message.content.strip()
+    message=response.choices[0].message
 
-    if content.startswith("```"):
-        content = content.replace("```json", "").replace("```", "").strip()
+    if not message.tool_calls:
+        raise Exception("LLM did not return response from tool call.")
+    
+    tool_call=message.tool_calls[0]
 
-    return json.loads(content)
+    selected_action=tool_call.function.name
+
+    arguments=json.loads(tool_call.function.arguments)
+
+    return {
+        "category": arguments["category"],
+        "priority": arguments["priority"],
+        "sentiment": arguments["sentiment"],
+        "assigned_department": arguments["assigned_department"],
+        "requires_escalation": arguments["requires_escalation"],
+        "selected_action": selected_action,
+        "summary": arguments["summary"],
+        "response_draft": arguments["response_draft"],
+        "reason": arguments["reason"]
+    }

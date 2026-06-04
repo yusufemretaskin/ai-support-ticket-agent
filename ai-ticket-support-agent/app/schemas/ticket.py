@@ -6,7 +6,7 @@ class TicketRequest(BaseModel):
     description:str
 
 class TicketAnalysis(BaseModel):
-    category:str
+    category: str
     priority: str
     sentiment: str
     assigned_department: str
@@ -14,12 +14,12 @@ class TicketAnalysis(BaseModel):
     selected_action: str
     summary: str
     response_draft: str
+    reason: str
 
 class TicketResponse(BaseModel):
     ticket_id: str
     title:str
     description:str
-    analysis:str
     analysis: TicketAnalysis
     action_result: dict[str, Any]
 

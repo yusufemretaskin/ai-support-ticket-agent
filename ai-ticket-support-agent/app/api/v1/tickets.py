@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from app.schemas.ticket import TicketRequest, TicketResponse, TicketMessageRequest
 from app.services.ai_ticket_analyzer import analyze_ticket_with_ai
 from app.services.ticket_service import create_ticket_record, get_all_tickets, add_customer_message, build_ticket_context
@@ -45,7 +45,8 @@ def add_ticket_message(ticket_id: str, request: TicketMessageRequest):
         ticket_id=ticket_id,
         message=request.message
     )
-
+    if ticket is None:
+        raise HTTPException(status_code=404, detail="Ticket not found")
     updated_analysis = analyze_ticket_with_ai(
         title=ticket["title"],
         description=build_ticket_context(ticket)
